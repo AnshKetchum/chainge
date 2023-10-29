@@ -4,13 +4,9 @@ from chainge.config import CHAINGE_API_KEY, CHAINGE_API_ENDPOINT, HOST_URL
 import requests
 from urllib.parse import urljoin
 
-
-print("ENDPOINT", CHAINGE_API_ENDPOINT)
-
-
 class ChaingeAPI(requests.Session):
 
-    def __init__(self, api_key = None, api_endpoint = CHAINGE_API_ENDPOINT): 
+    def __init__(self, api_key = None, api_endpoint = CHAINGE_API_ENDPOINT, host_url = HOST_URL): 
         super().__init__()
 
         #Load in the API key
@@ -26,8 +22,7 @@ class ChaingeAPI(requests.Session):
 
         #Do any additional startup work 
         self._base_url = api_endpoint
-
-        print("base", self._base_url)
+        self._host_url = host_url
 
         self._authorization = None
 
@@ -35,15 +30,11 @@ class ChaingeAPI(requests.Session):
     def request(self, method, url, *args, **kwargs):
         joined_url = urljoin(self._base_url, url)
 
-        print(joined_url, self._base_url, url)
-
         headers = {
             'X-RapidAPI-Key': self.api_key,
-            'X-RapidAPI-Host': HOST_URL,
+            'X-RapidAPI-Host': _host_url,
         }
 
-        print(headers)
-        
         out = None
         try:
            out = super().request(method, joined_url, *args, **kwargs, headers=headers)
