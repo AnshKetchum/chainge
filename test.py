@@ -1,1 +1,3 @@
-from chainge.chain.tools.StockTools import StockFundamentalsTool
+from chainge.api.api import stock_api
+
+print(stock_api.ping())
