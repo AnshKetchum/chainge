@@ -5,6 +5,18 @@ description = "A comprehensive set of LangChain AI tools to help your AI agents 
 authors = ["AnshKetchum <eye.am.ansh@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+keywords = ["large language models", "AI", "LLM", ]
+packages = [
+    { include = "chainge",  from = "." },
+]
+classifiers =[
+            "Programming Language :: Python :: 3",
+            "Operating System :: OS Independent",
+            "License :: OSI Approved :: MIT License",
+]
+include = [
+    "LICENSE.md",
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
