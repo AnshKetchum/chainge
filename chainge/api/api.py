@@ -1,11 +1,17 @@
 from getpass import getpass
-from chainge.config import CHAINGE_API_KEY, CHAINGE_API_ENDPOINT
+from chainge.config import CHAINGE_API_KEY, CHAINGE_API_ENDPOINT, HOST_URL
 
 import requests
+from urllib.parse import urljoin
+
+
+print("ENDPOINT", CHAINGE_API_ENDPOINT)
+
 
 class ChaingeAPI(requests.Session):
 
     def __init__(self, api_key = None, api_endpoint = CHAINGE_API_ENDPOINT): 
+        super().__init__()
 
         #Load in the API key
         if api_key:
@@ -19,24 +25,36 @@ class ChaingeAPI(requests.Session):
             raise Exception("We weren't able to properly retrieve your API Key")
 
         #Do any additional startup work 
-        self.api_endpoint = api_endpoint
+        self._base_url = api_endpoint
+
+        print("base", self._base_url)
+
+        self._authorization = None
 
     #Generalized machinery methods for request operations
     def request(self, method, url, *args, **kwargs):
-            joined_url = urljoin(self._base_url, url)
-            if self._authorization:
-                headers = {
-                    **kwargs.get("headers", {}),
-                    headers: {
-                        'X-RapidAPI-Key': self.api_key,
-                        'X-RapidAPI-Host': self.api_endpoint 
-                    }
-                }
-            else:
-                headers = kwargs.get("headers", {})
+        joined_url = urljoin(self._base_url, url)
 
-            return super().request(method, joined_url, *args, **kwargs, headers=headers)
+        print(joined_url, self._base_url, url)
+
+        headers = {
+            'X-RapidAPI-Key': self.api_key,
+            'X-RapidAPI-Host': HOST_URL,
+        }
+
+        print(headers)
         
+        out = None
+        try:
+           out = super().request(method, joined_url, *args, **kwargs, headers=headers)
+           out.raise_for_status()
+
+        except requests.exceptions.HTTPError as errh: 
+            print("HTTP Error") 
+            print(out.text)
+            print(errh.args)
+
+        return out 
 
 chainge_api = ChaingeAPI()
 
@@ -49,15 +67,37 @@ class StockAdapter:
     
     def __init__(self, chainge_api: ChaingeAPI):
         self.chainge_api = chainge_api
-    
+
+    def ping(self):
+        out = self.chainge_api.get(f'ping').json()
+        return out and out['message'] == 'running'
+ 
     def lookup(self, keyword):
         '''
             Given a single keyword, returns a set of potential stock tickers
 
             apple --> [AAPL, AAPP, etc]
         '''
-        out = self.chainge_api.get(f'stock/lookup/{keyword}').json()
-        print(out)
-        return out
+        out = self.chainge_api.get(f'stock/lookup/{keyword}')
+        return out.json()
+
+    def fundamentals(self, keyword):
+        '''
+            Given a single ticker, returns all fundamental data
+            to build a financial profile of the company.
+
+            apple --> [AAPL, AAPP, etc]
+        '''
+        out = self.chainge_api.get(f'stock/basic/{keyword}')
+        return out.json()
+
+    def alternatives(self, keyword):
+        '''
+            Given a single keyword, returns a set of stock tickers
+            that compete or collaborate with the company
+        '''
+
+        out = self.chainge_api.get(f'stock/alternatives/{keyword}')
+        return out.json()
 
 stock_api = StockAdapter(chainge_api = chainge_api)
