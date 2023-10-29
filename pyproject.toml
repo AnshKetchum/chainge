@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "chainge"
-version = "0.0.1"
+version = "0.0.1.1"
 description = "A comprehensive set of LangChain AI tools to help your AI agents interact with and thrive in moneyland."
 authors = ["AnshKetchum <eye.am.ansh@gmail.com>"]
 license = "MIT"
