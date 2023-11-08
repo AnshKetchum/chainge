@@ -32,7 +32,7 @@ class ChaingeAPI(requests.Session):
 
         headers = {
             'X-RapidAPI-Key': self.api_key,
-            'X-RapidAPI-Host': _host_url,
+            'X-RapidAPI-Host': self._host_url,
         }
 
         out = None
@@ -72,6 +72,17 @@ class StockAdapter:
         out = self.chainge_api.get(f'stock/lookup/{keyword}')
         return out.json()
 
+    def fundamentals_lookup(self, keyword):
+        '''
+            Given a single ticker, returns all fundamental data
+            to build a financial profile of the company.
+
+            apple --> [AAPL, AAPP, etc]
+        '''
+
+        out = self.chainge_api.post(f'stock/basic/list')
+        return out.json()["results"]
+
     def fundamentals(self, keyword):
         '''
             Given a single ticker, returns all fundamental data
@@ -79,8 +90,13 @@ class StockAdapter:
 
             apple --> [AAPL, AAPP, etc]
         '''
-        out = self.chainge_api.get(f'stock/basic/{keyword}')
-        return out.json()
+
+        ticker, attributes = keywords.split(';')
+        out = self.chainge_api.post(f'stock/basic', data = {
+            "ticker": ticker, 
+            "attributes": attributes
+        })
+        return out.json()["results"]
 
     def alternatives(self, keyword):
         '''
