@@ -15,12 +15,5 @@ jobs:
         run: curl -sSL https://install.python-poetry.org/ | python -
       - name: Install dependencies
         run: poetry install
-      - name: Update Package Version
-        run: |
-          # Update the version in pyproject.toml using Poetry
-          poetry version patch  # This updates the version (you can change "patch" to "minor" or "major" as per your needs)
-          NEW_VERSION=$(poetry version -s)
-          RANDOM_SUFFIX=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10 || true)  # Generating a random 10-character string
-          poetry version $NEW_VERSION+$RANDOM_SUFFIX
       - name: Publish package
         run: poetry config repositories.testpypi https://test.pypi.org/legacy/ && poetry publish --build -r testpypi -u __token__ -p ${{ secrets.TESTPYPI_API_KEY }}
