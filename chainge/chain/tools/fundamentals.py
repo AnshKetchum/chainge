@@ -36,13 +36,13 @@ class StockFundamentalsProbeTool(BaseTool):
         self, run_manager = None
     ) -> str:
         """Use the tool."""
-        return f'Here is a list of all the fundamental attributes: {",".join(stock_api.fundamentals("AAPL")["metric"].keys())}'
+        return f'Here is a list of all the fundamental attributes: {stock_api.fundamentals_lookup()}'
 
     async def _arun(
         self, stock_ticker_name: str, run_manager = None
     ) -> str:
         """Use the tool asynchronously."""
-        return f'Here is a list of all the fundamental attributes: {",".join(stock_api.fundamentals("AAPL")["metric"].keys())}'
+        return f'Here is a list of all the fundamental attributes: {stock_api.fundamentals_lookup()}'
 
 
 
@@ -66,14 +66,10 @@ class StockFundamentalsTool(BaseTool):
     ) -> str:
         """Use the tool."""
 
-        desired_attributes = [ v.strip() for v in requested_metrics.split(',')]
-        print("Looking for ", desired_attributes)
-
-        attr = stock_api.fundamentals(stock_ticker_name)["metric"]
-        return str({k : attr[k] for k in attr if k in desired_attributes})
+        return stock_api.fundamentals(stock_ticker_name, requested_metrics)
 
     async def _arun(
         self, stock_ticker_name: str, run_manager = None
     ) -> str:
         """Use the tool asynchronously."""
-        return str({k : attr[k] for k in attr if k in desired_attributes})
+        return stock_api.fundamentals(stock_ticker_name, requested_metrics)
