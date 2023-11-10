@@ -73,3 +73,29 @@ class StockFundamentalsTool(BaseTool):
     ) -> str:
         """Use the tool asynchronously."""
         return stock_api.fundamentals(stock_ticker_name, requested_metrics)
+
+class StockFinancialReportsToolInput(BaseModel):
+    stock_ticker_name: str = Field()
+
+class StockFinancialReportsTool(BaseTool):
+    name = "company_stocks_financial_reports_retrieval"
+
+    description = """Use this tool to receive in-depth statistics on the latest company financial report filed to the 
+    SEC. Note that this are financials as reported by the company 
+
+    input: stock ticker; AAPL, GOOG, and so on.
+    """
+    args_schema: Type[BaseModel] = StockFinancialReportsToolInput 
+
+    def _run(
+        self, stock_ticker_name: str, run_manager = None
+    ) -> str:
+        """Use the tool."""
+
+        return stock_api.financial_report(stock_ticker_name)
+
+    async def _arun(
+        self, stock_ticker_name: str, run_manager = None
+    ) -> str:
+        """Use the tool asynchronously."""
+        return stock_api.financial_report(stock_ticker_name)

@@ -70,9 +70,9 @@ class StockAdapter:
             apple --> [AAPL, AAPP, etc]
         '''
         out = self.chainge_api.get(f'stock/lookup/{keyword}')
-        return out.json()
+        return out.json()["results"]
 
-    def fundamentals_lookup(self, keyword):
+    def fundamentals_lookup(self):
         '''
             Given a single ticker, returns all fundamental data
             to build a financial profile of the company.
@@ -83,7 +83,7 @@ class StockAdapter:
         out = self.chainge_api.post(f'stock/basic/list')
         return out.json()["results"]
 
-    def fundamentals(self, keyword):
+    def fundamentals(self, ticker, attributes):
         '''
             Given a single ticker, returns all fundamental data
             to build a financial profile of the company.
@@ -91,11 +91,21 @@ class StockAdapter:
             apple --> [AAPL, AAPP, etc]
         '''
 
-        ticker, attributes = keywords.split(';')
-        out = self.chainge_api.post(f'stock/basic', data = {
+        out = self.chainge_api.post(f'stock/basic', json = {
             "ticker": ticker, 
             "attributes": attributes
         })
+        return out.json()["results"]
+
+    def financial_report(self, ticker):
+        '''
+            Given a single ticker, returns all fundamental data
+            to build a financial profile of the company.
+
+            apple --> [AAPL, AAPP, etc]
+        '''
+
+        out = self.chainge_api.get(f'stock/financials/reports/{ticker}')
         return out.json()["results"]
 
     def alternatives(self, keyword):
@@ -105,6 +115,38 @@ class StockAdapter:
         '''
 
         out = self.chainge_api.get(f'stock/alternatives/{keyword}')
-        return out.json()
+        return out.json()["results"]
+
+
+class CompanyAdapter:
+    '''
+        Adapter for all stock related Langchain tooling
+    '''
+    
+    def __init__(self, chainge_api: ChaingeAPI):
+        self.chainge_api = chainge_api
+
+    def ping(self):
+        out = self.chainge_api.get(f'ping').json()
+        return out and out['message'] == 'running'
+ 
+    def search(self, keyword):
+        '''
+            Given a single keyword, returns a set of potential entity names for 
+            future matching
+
+        '''
+        out = self.chainge_api.get(f'company/entity/general/search/{keyword}')
+        return out.json()["results"]
+
+    def lookup(self, keyword):
+        '''
+            Given a single ticker, returns a basic profile
+            of the company
+        '''
+
+        out = self.chainge_api.post(f'company/entity/lookup/{keyword}')
+        return out.json()["results"]
 
 stock_api = StockAdapter(chainge_api = chainge_api)
+company_api = CompanyAdapter(chainge_api = chainge_api)

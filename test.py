@@ -1,3 +1,1 @@
-from chainge.api.api import stock_api
-
-print(stock_api.ping())
+from chainge.api.api import company_api

@@ -3,5 +3,6 @@ from . import api
 
 #Folders
 from . import chain as chain
+from . import dash as dash
 
 

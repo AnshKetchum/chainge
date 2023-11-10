@@ -30,6 +30,12 @@ pytest = "^7.4.3"
 [tool.poetry.group.openai]
 optional = true
 
+[tool.poetry.group.streamlit]
+optional = true
+
+[tool.poetry.group.streamlit.dependencies]
+streamlit = "^1.28.1"
+
 [tool.poetry.group.openai.dependencies]
 openai = "^0.28.1"
 
