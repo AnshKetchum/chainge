@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/chainge.svg)](https://badge.fury.io/py/chainge)
+
 # chainge
 A comprehensive, open source set of LangChain AI tools to help your AI agents interact with and *thrive* in moneyland.
 
